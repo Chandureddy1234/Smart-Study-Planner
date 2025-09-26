@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Study Planner</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>📚 Smart Study Planner</h1>
+    <nav>
+      <button data-page="dashboardPage">Today</button>
+      <button data-page="goalsPage">Goals</button>
+      <button data-page="settingsPage">Settings</button>
+      <!-- Placeholder for future Flashcards page -->
+      <button data-page="flashcardsPage">Flashcards</button>
+      <button id="themeToggleBtn" title="Toggle theme" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    </nav>
+  </header>
+  <main>
+    <!-- Dashboard -->
+        <!-- Today Dashboard -->
+    <section id="dashboardPage" class="page active">
+      <div class="welcome">
+        <h2>What's the plan today?</h2>
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="kpi-streak">0</div>
+            <div class="stat-label">🔥 Day Streak</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="kpi-today-hours">0h</div>
+            <div class="stat-label">📚 Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="kpi-deadlines">0</div>
+            <div class="stat-label">⏰ Due Soon</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="kpi-focus-target">0%</div>
+            <div class="stat-label">🎯 Daily Goal</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="kpi-avg-focus">—</div>
+            <div class="stat-label">🧠 Avg Focus</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="kpi-flashcards-due">0</div>
+            <div class="stat-label">🗂️ Cards Due</div>
+          </div>
+        </div>
+        <div class="week-timeline" id="weekTimeline" aria-label="Upcoming 7 day study plan"></div>
+      </div>
+
+      <div class="main-content">
+        <!-- Timer Section -->
+        <div class="timer-section">
+          <div class="timer-display">
+            <div class="timer-ring-wrapper">
+              <svg class="timer-ring" viewBox="0 0 120 120">
+                <circle class="ring-bg" cx="60" cy="60" r="54" />
+                <circle class="ring-progress" cx="60" cy="60" r="54" stroke-dasharray="339.292" stroke-dashoffset="0" />
+              </svg>
+              <div class="timer-centered">
+                <div class="timer-clock" id="timerClock">25:00</div>
+                <div class="timer-mode" id="timerMode">Ready to Focus</div>
+              </div>
+            </div>
+          </div>
+          <div class="timer-controls">
+            <button type="button" id="startTimerBtn" class="btn-primary">Start Studying</button>
+            <button type="button" id="pauseTimerBtn" class="btn-secondary">Pause</button>
+            <button type="button" id="resetTimerBtn" class="btn-secondary">Reset</button>
+          </div>
+        </div>
+
+        <!-- Today's Plan -->
+        <div class="today-plan">
+          <h3>Today's Study Sessions</h3>
+          <ul id="todaysSessions"></ul>
+          <button id="quickAddBtn" class="btn-outline">+ Add Quick Session</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Goals -->
+    <section id="goalsPage" class="page">
+      <h2>Study Goals</h2>
+      <div class="goal-form-card">
+        <form id="goalForm">
+          <input id="goalTitle" type="text" placeholder="What do you want to study? (e.g., Math Exam)" required />
+          <input id="goalDeadline" type="date" required />
+          <button type="submit" class="btn-primary">Add Goal</button>
+        </form>
+      </div>
+      
+      <div class="goals-list">
+        <h3>Your Goals</h3>
+        <ul id="goalList"></ul>
+      </div>
+    </section>
+
+    <!-- Flashcards placeholder page -->
+    <section id="flashcardsPage" class="page">
+      <h2>Flashcards (Coming Soon)</h2>
+      <p class="muted">A space to review and create spaced-repetition cards will appear here.</p>
+    </section>
+
+    <!-- Quick Add Session Modal -->
+    <div id="quickAddModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="quickAddTitle">
+      <div class="modal-content">
+        <h3 id="quickAddTitle">Quick Study Session</h3>
+        <form id="quickSessionForm">
+          <label>What are you studying?
+            <select id="quickGoalSelect">
+              <option value="">Choose a goal...</option>
+            </select>
+          </label>
+          <label>How long?
+            <select id="quickDuration">
+              <option value="15">15 minutes</option>
+              <option value="25" selected>25 minutes (Pomodoro)</option>
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">1 hour</option>
+            </select>
+          </label>
+          <label>Study method
+            <select id="quickTechnique">
+              <option value="Focus">Just Focus</option>
+              <option value="Pomodoro" selected>Pomodoro (25min + breaks)</option>
+              <option value="Active Recall">Active Recall (test yourself)</option>
+              <option value="Review">Review Notes</option>
+            </select>
+          </label>
+          <div class="modal-actions">
+            <button type="submit" class="btn-primary">Add Session</button>
+            <button type="button" id="closeQuickAddBtn" class="btn-secondary">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <section id="settingsPage" class="page">
+      <h2>Settings</h2>
+      <div class="settings-simple">
+        <div class="setting-card">
+          <h3>Study Timer</h3>
+          <label>Focus time (minutes)
+            <select id="setFocus">
+              <option value="15">15 min</option>
+              <option value="20">20 min</option>
+              <option value="25" selected>25 min (classic)</option>
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+            </select>
+          </label>
+          <label>Break time (minutes)
+            <select id="setShort">
+              <option value="3">3 min</option>
+              <option value="5" selected>5 min</option>
+              <option value="10">10 min</option>
+            </select>
+          </label>
+          <button id="saveSettingsBtn" class="btn-primary">Save</button>
+
+          <hr>
+          <label>
+            <input type="checkbox" id="autoCycleToggle" checked>
+            Auto-start next phase (focus/break)
+          </label>
+          <label>
+            <input type="checkbox" id="soundToggle" checked>
+            Sound on phase change
+          </label>
+          <label>
+            <input type="checkbox" id="notifToggle">
+            Desktop notification on phase change
+          </label>
+        </div>
+
+        <div class="setting-card">
+          <h3>Daily Target</h3>
+          <label>Target study minutes today
+            <input type="number" id="focusTargetInput" min="15" step="15" placeholder="e.g. 120" />
+          </label>
+          <button id="saveFocusTargetBtn" class="btn-outline">Save Target</button>
+          <small class="muted">Used to calculate 🎯 progress KPI.</small>
+        </div>
+
+        <div class="setting-card">
+          <h3>Notifications</h3>
+          <button id="enableNotifsBtn" class="btn-outline">Enable Study Reminders</button>
+          <div id="notifStatus" class="muted"></div>
+        </div>
+
+        <div class="setting-card">
+          <h3>Data</h3>
+          <button id="exportBtn" class="btn-outline">Backup My Data</button>
+          <input type="file" id="importFile" accept="application/json" style="display:none" />
+          <button id="importBtn" class="btn-outline">Restore From Backup</button>
+          <hr>
+          <button id="clearDataBtn" class="btn-danger">Reset Everything</button>
+          <small class="muted">This will delete all your goals and progress</small>
+        </div>
+        <div class="setting-card">
+          <h3>Appearance</h3>
+          <label>Theme
+            <select id="themeSelect">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto (System)</option>
+            </select>
+          </label>
+          <small class="muted">Theme also toggleable from header moon/sun icon.</small>
+        </div>
+        <div class="setting-card">
+          <h3>AI Features (Experimental)</h3>
+          <label>Your Google AI Studio API Key
+            <input type="password" id="geminiApiKey" placeholder="Paste your key here" />
+          </label>
+          <button id="saveApiKeyBtn" class="btn-outline">Save Key</button>
+          <small class="muted">Your key is stored securely in your browser's local storage and is only used to call Google's API directly from your browser. It is never sent to our servers.</small>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>💡 Study smart: Take breaks every 25 minutes. Your data stays private on this device.</small>
+  </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
